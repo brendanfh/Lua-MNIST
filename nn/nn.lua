@@ -5,18 +5,21 @@ function Neuron:init(input_count)
 	self.value = 0
 	self.delta = 0
 	self.weights = {}
+	self.bias = math.random() * 1 - .5
 	for i in range(1, input_count) do
 		self.weights[i] = math.random() * 1 - .5 -- Initialize to random weights
 	end
 end
 
-function Neuron:activate(inputs, bias)
+function Neuron:activate(inputs)
 	local weights = self.weights
+
+	local activation = self.bias
 	for i = 1, #weights do
-		bias = bias + (weights[i] * inputs[i])
+		activation = activation + (weights[i] * inputs[i])
 	end
 
-	self.value = bias / (2 + 2 * math.abs(bias)) + 0.5
+	self.value = activation / (2 + 2 * math.abs(activation)) + 0.5
 end
 
 Layer = class()
@@ -28,8 +31,6 @@ function Layer:init(neuron_count, input_count)
 	for i = 1, neuron_count do
 		self.neurons[i] = Neuron(input_count)
 	end
-
-	self.bias = math.random()
 end
 
 NeuralNetwork = class()
@@ -59,9 +60,8 @@ function NeuralNetwork:activate(inputs)
 			inputs[j] = prevCells[j].value
 		end
 
-		local bias = self.network[i].bias
 		for j = 1, #cells do
-			cells[j]:activate(inputs, bias)
+			cells[j]:activate(inputs)
 		end
 	end
 end
@@ -96,10 +96,11 @@ function NeuralNetwork:back_propagate(inputs, outputs)
 	end
 
 	for i = 2, numLayers do
-		self.network[i].bias = self.network[i].neurons[#self.network[i].neurons].delta * learningRate
 		for j = 1, #self.network[i].neurons do
+			self.network[i].neurons[j].bias = self.network[i].neurons[j].bias + self.network[i].neurons[j].delta * learningRate
 			for k = 1, #self.network[i].neurons[j].weights do
 				local weights = self.network[i].neurons[j].weights
+
 				weights[k] = weights[k] + self.network[i].neurons[j].delta * learningRate * self.network[i - 1].neurons[k].value
 			end
 		end
