@@ -90,14 +90,18 @@ function saveNeuralNetwork(network, file_path)
 
 	file:write("\n")
 
-	for l = 1, numLayers do
+	for l = 2, numLayers do
 		local layer = network.network[l]
 
 		for n = 1, #layer.neurons do
 			file:write(tostring(bias) .. ' ')
 		end
+	end
 
-		file:write("\n")
+	file:write("\n")
+
+	for l = 2, numLayers do
+		local layer = network.network[l]
 
 		for n = 1, #layer.neurons do
 			local neuron = layer.neurons[n]
@@ -130,19 +134,20 @@ function loadNeuralNetwork(file_path)
 
 	local network = nn.NeuralNetwork(layerCount, learningRate)
 
-	for l = 1, numLayers do
-		log.log(log.LOG_INFO, "Reading layer " .. l)
-
-		local upper = layerCount[l - 1]
-		if upper == nil then upper = layerCount[l] end
+	for l = 2, numLayers do
+		log.log(log.LOG_INFO, "Reading layer biases " .. l)
 
 		for n = 1, layerCount[l] do
 			local bias = file:read("*number")
 			network.network[l].neurons[n].bias = bias
 		end
+	end
+
+	for l = 2, numLayers do
+		log.log(log.LOG_INFO, "Reading layer weights " .. l)
 
 		for n = 1, layerCount[l] do
-			for w = 1, upper do
+			for w = 1, #network.network[l].neurons[n].weights do
 				local weight = file:read("*number")
 				network.network[l].neurons[n].weights[w] = weight
 			end

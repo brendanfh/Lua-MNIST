@@ -115,7 +115,7 @@ function draw()
 
 	love.graphics.setLineWidth(4)
 	local w, h = love.window.getMode()
-	network:draw(0, 0, w / 2, h, 3)
+	network:draw(0, 0, w / 2, h, 2)
 
 	-- Draw scratchpad
 	love.graphics.setLineWidth(1)
@@ -161,6 +161,8 @@ function draw()
 		tostring(whichNumber) .. ", confidence: " .. tostring(highestConfidence * 100) .. "%",
 		scratchpad_square_x, scratchpad_square_y - 120, scratchpad_scale * 28, "center"
 	)
+
+	love.graphics.printf("Made by:\nBrendan Hansen\nCollin Rumpca", w / 2, h - 150, w / 2, "center")
 end
 
 return {
